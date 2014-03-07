@@ -19,8 +19,8 @@ module Magento
       # int $parentId - ID of parent category
       # array $categoryData - category data ( array(’attribute_code’⇒‘attribute_value’ )
       # mixed $storeView - store view ID or code (optional)
-      def create(attributes)
-        id = commit("create", attributes)
+      def create(connection, attributes)
+        id = commit(connection, "create", attributes)
         record = new(attributes)
         record.id = id
         record
@@ -36,8 +36,8 @@ module Magento
       # int $categoryId - category ID
       # mixed $storeView - store view id or code (optional)
       # array $attributes - return only specified attributes (optional)
-      def info(*args)
-        new(commit("info", *args))
+      def info(connection, *args)
+        new(commit(connection, "info", *args))
       end
 
       # catalog_category.update
@@ -50,8 +50,8 @@ module Magento
       # int $categoryId - ID of category for updating
       # array $categoryData - category data ( array(’attribute_code’⇒‘attribute_value’ )
       # mixed storeView - store view ID or code (optional)
-      def update(*args)
-        commit("update", *args)
+      def update(connection, *args)
+        commit(connection, "update", *args)
       end
 
       # catalog_category.delete
@@ -62,8 +62,8 @@ module Magento
       # Arguments:
       # 
       # int $categoryId - category ID
-      def delete(*args)
-        commit("delete", *args)
+      def delete(connection, *args)
+        commit(connection, "delete", *args)
       end
 
       # catalog_category.currentStore
@@ -74,8 +74,8 @@ module Magento
       # Arguments:
       # 
       # mixed storeView - Store view ID or code.
-      def current_store(*args)
-        commit("currentStore", *args)
+      def current_store(connection, *args)
+        commit(connection, "currentStore", *args)
       end
 
       # catalog_category.tree
@@ -87,8 +87,8 @@ module Magento
       # 
       # int parentId - parent category id (optional)
       # mixed storeView - store view (optional)
-      def tree(*args)
-        commit("tree", *args)
+      def tree(connection, *args)
+        commit(connection, "tree", *args)
       end
 
       # catalog_category.level
@@ -101,8 +101,8 @@ module Magento
       # mixed website - website code or Id (optional)
       # mixed storeView - store view code or Id (optional)
       # mixed parentCategory - parent category Id (optional)
-      def level(*args)
-        commit("level", *args)
+      def level(connection, *args)
+        commit(connection, "level", *args)
       end
 
       # catalog_category.move
@@ -119,8 +119,8 @@ module Magento
       # NOTE Please make sure that you are not moving category to any of its own children. 
       # There are no extra checks to prevent doing it through webservices API, and you won’t 
       # be able to fix this from admin interface then
-      def move(*args)
-        commit("move", *args)
+      def move(connection, *args)
+        commit(connection, "move", *args)
       end
 
       # catalog_category.assignedProducts
@@ -132,8 +132,8 @@ module Magento
       # 
       # int $categoryId - category ID
       # mixed $store - store ID or code
-      def assigned_products(*args)
-        commit("assignedProducts", *args)
+      def assigned_products(connection, *args)
+        commit(connection, "assignedProducts", *args)
       end
 
       # catalog_category.assignProduct
@@ -146,8 +146,8 @@ module Magento
       # int $categoryId - category ID
       # mixed $product - product ID or sku
       # int $position - position of product in category (optional)
-      def assign_product(*args)
-        commit("assignProduct", *args)
+      def assign_product(connection, *args)
+        commit(connection, "assignProduct", *args)
       end
 
       # catalog_category.updateProduct
@@ -160,8 +160,8 @@ module Magento
       # int $categoryId - category ID
       # mixed $product - product ID or sku
       # int $position - position of product in category (optional)
-      def update_product(*args)
-        commit("updateProduct", *args)
+      def update_product(connection, *args)
+        commit(connection, "updateProduct", *args)
       end
 
       # catalog_category.removeProduct
@@ -173,43 +173,43 @@ module Magento
       # 
       # int $categoryId - category ID
       # mixed $product - product ID or sku
-      def remove_product(*args)
-        commit("removeProduct", *args)
+      def remove_product(connection, *args)
+        commit(connection, "removeProduct", *args)
       end
       
-      def find_by_id(id)
-        info(id)
+      def find_by_id(connection, id)
+        info(connection, id)
       end
     end
     
-    def delete
-      self.class.delete(self.id)
+    def delete(connection)
+      self.class.delete(connection, self.id)
     end
     
-    def update_attribute(name, value)
+    def update_attribute(connection, name, value)
       @attributes[name] = value
-      self.class.update(self.id, Hash[*[name.to_sym, value]])
+      self.class.update(connection, self.id, Hash[*[name.to_sym, value]])
     end
     
-    def update_attributes(attrs)
+    def update_attributes(connection, attrs)
       attrs.each_pair { |k, v| @attributes[k] = v }
-      self.class.update(self.id, attrs)
+      self.class.update(connection, self.id, attrs)
     end
     
-    def assigned_products(*args)
-      self.class.assigned_products(self.id, *args)
+    def assigned_products(connection, *args)
+      self.class.assigned_products(connection, self.id, *args)
     end
 
-    def assign_product(*args)
-      self.class.assign_product(self.id, *args)
+    def assign_product(connection, *args)
+      self.class.assign_product(connection, self.id, *args)
     end
 
-    def update_product(*args)
-      self.class.update_product(self.id, *args)
+    def update_product(connection, *args)
+      self.class.update_product(connection, self.id, *args)
     end
 
-    def remove_product(*args)
-      self.class.remove_product(self.id, *args)
+    def remove_product(connection, *args)
+      self.class.remove_product(connection, self.id, *args)
     end
   end
 end

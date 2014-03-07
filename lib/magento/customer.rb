@@ -20,8 +20,8 @@ module Magento
       # Note: password_hash will only match exactly with the same MD5 and salt as was used when 
       # Magento stored the value. If you try to match with an unsalted MD5 hash, or any salt other 
       # than what Magento used, it will not match. This is just a straight string comparison.
-      def list(*args)
-        results = commit("list", *args)
+      def list(connection, *args)
+        results = commit(connection, "list", *args)
         results.collect do |result|
           new(result)
         end
@@ -35,8 +35,8 @@ module Magento
       # Arguments:
       # 
       # array customerData - cutomer data (email, firstname, lastname, etc...)
-      def create(attributes)
-        id = commit("create", attributes)
+      def create(connection, attributes)
+        id = commit(connection, "create", attributes)
         record = new(attributes)
         record.id = id
         record
@@ -54,8 +54,8 @@ module Magento
       # array attributes | string attribute (optional depending on version) - 
       #   return only these attributes. Possible attributes are updated_at, increment_id, 
       #   customer_id, created_at. The value, customer_id, is always returned.
-      def info(*args)
-        new(commit("info", *args))
+      def info(connection, *args)
+        new(commit(connection, "info", *args))
       end
     
       # customer.update
@@ -67,8 +67,8 @@ module Magento
       # 
       # int customerId - customer ID
       # array customerData - customer data (email, firstname, etc...)
-      def update(*args)
-        commit("update", *args)
+      def update(connection, *args)
+        commit(connection, "update", *args)
       end
     
     
@@ -80,18 +80,18 @@ module Magento
       # Arguments:
       # 
       # int customerId - customer ID.
-      def delete(*args)
-        commit("delete", *args)
+      def delete(connection, *args)
+        commit(connection, "delete", *args)
       end
       
-      def find_by_id(id)
-        info(id)
+      def find_by_id(connection, id)
+        info(connection, id)
       end
 
-      def find(find_type, options = {})
+      def find(connection, find_type, options = {})
         filters = {}
         options.each_pair { |k, v| filters[k] = {:eq => v} }
-        results = list(filters)
+        results = list(connection, filters)
         if find_type == :first
           results.first
         else
@@ -99,27 +99,27 @@ module Magento
         end
       end
 
-      def all
-        list
+      def all(connection)
+        list(connection)
       end
     end
     
-    def addresses
-      Magento::CustomerAddress.list(self.id)
+    def addresses(connection)
+      Magento::CustomerAddress.list(connection, self.id)
     end
     
-    def delete
-      self.class.delete(self.id)
+    def delete(connection)
+      self.class.delete(connection, self.id)
     end
     
-    def update_attribute(name, value)
+    def update_attribute(connection, name, value)
       @attributes[name] = value
-      self.class.update(self.id, Hash[*[name.to_sym, value]])
+      self.class.update(connection, self.id, Hash[*[name.to_sym, value]])
     end
     
-    def update_attributes(attrs)
+    def update_attributes(connection, attrs)
       attrs.each_pair { |k, v| @attributes[k] = v }
-      self.class.update(self.id, attrs)
+      self.class.update(connection, self.id, attrs)
     end
   end
 end
